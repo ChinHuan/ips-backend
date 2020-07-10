@@ -1,1 +1,1 @@
-web: gunicorn ips_backend.wsgi --log-file -
+web: python manage.py runserver

@@ -1,7 +1,33 @@
 from django.db import models
 
-class Place(models.Model):
-    name = models.CharField(max_length=60)
+class User(models.Model):
+    class Role(models.IntegerChoices):
+        USER = 1
+        ADMIN = 2
+
+    userID = models.AutoField(primary_key=True)
+    userName = models.CharField(max_length=60)
+    userEmail = models.CharField(max_length=60)
+    userContact = models.CharField(max_length=20)
+    userRole = models.IntegerField(choices=Role.choices)
 
     def __str__(self):
-        return self.name
+        return '{}: {}'.format(self.userID, self.userName)
+
+class Place(models.Model):
+    placeID = models.AutoField(primary_key=True)
+    placeName = models.CharField(max_length=60)
+
+    def __str__(self):
+        return '{}: {}'.format(self.placeID, self.placeName)
+
+class Visit(models.Model):
+    visitID = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    place = models.ForeignKey(Place, on_delete=models.CASCADE)
+    tagID = models.CharField(max_length=10)
+    datetime = models.DateTimeField(auto_now_add=True)
+    duration = models.DurationField(null=True, blank=True)
+
+    def __str__(self):
+        return '{} {} > {}'.format(self.datetime, self.user, self.place)

@@ -127,3 +127,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Location where django collect all static files
+STATIC_ROOT = os.path.join(BASE_DIR,'static')
+
+# Location where you will store your static files
+STATICFILES_DIRS = [os.path.join(BASE_DIR,'ips_backend/static')]

@@ -17,9 +17,11 @@ class UserView(RetrieveAPIView):
         user = User.objects.get(userID=userID)
         return Response(UserSerializer(user).data)
 
-class VisitListView(ListAPIView):
-    serializer_class = VisitSerializer
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get_queryset(self):
-        visits = Visit.objects.filter(user=self.kwargs['userID']).all()
         return visits

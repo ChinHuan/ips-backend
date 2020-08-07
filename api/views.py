@@ -24,4 +24,13 @@ class UserView(RetrieveAPIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class VisitListView(ListCreateAPIView, UpdateModelMixin):
+    serializer_class = VisitPlaceSerializer
+
+    def filter_queryset(self, queryset):
+        visits = queryset.filter(user=self.kwargs['userID'])
         return visits
+
+    def get_queryset(self):
+        queryset = self.filter_queryset(Visit.objects.all())
+        return queryset

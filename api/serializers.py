@@ -11,9 +11,14 @@ class PlaceSerializer(serializers.HyperlinkedModelSerializer):
         model = Place
         fields = ('placeID', 'placeName')
 
-class VisitSerializer(serializers.HyperlinkedModelSerializer):
+class VisitPlaceSerializer(serializers.HyperlinkedModelSerializer):
     place = PlaceSerializer()
 
     class Meta:
         model = Visit
         fields = ('visitID', 'place', 'tagID', 'datetime', 'duration')
+
+class VisitSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Visit
+        fields = ('visitID', 'place', 'user', 'tagID', 'datetime', 'duration')

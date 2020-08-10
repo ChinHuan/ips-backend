@@ -13,6 +13,8 @@ class PlaceListView(ListAPIView):
     queryset = Place.objects.all()
 
 class UserView(RetrieveAPIView):
+    serializer_class = UserSerializer
+
     def get(self, request, userID):
         user = User.objects.get(userID=userID)
         return Response(UserSerializer(user).data)

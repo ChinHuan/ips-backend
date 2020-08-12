@@ -15,9 +15,12 @@ class PlaceListView(ListAPIView):
 class UserView(RetrieveAPIView):
     serializer_class = UserSerializer
 
-    def get(self, request, userID):
-        user = User.objects.get(userID=userID)
-        return Response(UserSerializer(user).data)
+    def get(self, request, userEmail):
+        try:
+            user = User.objects.get(userEmail=userEmail)
+            return Response(UserSerializer(user).data)
+        except User.DoesNotExist:
+            return Response(None)
 
     def post(self, request):
         serializer = UserSerializer(data=request.data)

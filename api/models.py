@@ -18,6 +18,7 @@ class User(models.Model):
 class Place(models.Model):
     placeID = models.AutoField(primary_key=True)
     placeName = models.CharField(max_length=60)
+    placePhotoUrl = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return '{}: {}'.format(self.placeID, self.placeName)

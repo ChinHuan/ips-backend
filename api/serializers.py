@@ -4,7 +4,7 @@ from .models import User, Place, Visit
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ('userID', 'userName', 'userEmail', 'userContact', 'userRole')
+        fields = ('userID', 'userName', 'userEmail', 'userContact', 'userRole', 'userPhotoUrl')
 
 class PlaceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

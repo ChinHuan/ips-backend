@@ -9,7 +9,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class PlaceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Place
-        fields = ('placeID', 'placeName')
+        fields = ('placeID', 'placeName', 'placePhotoUrl')
 
 class VisitPlaceSerializer(serializers.HyperlinkedModelSerializer):
     place = PlaceSerializer()

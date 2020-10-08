@@ -5,8 +5,8 @@ from rest_framework.mixins import UpdateModelMixin
 from rest_framework import status
 from django.utils.dateparse import parse_duration
 
-from .serializers import UserSerializer, PlaceSerializer, VisitPlaceSerializer, VisitSerializer
-from .models import User, Place, Visit
+from .serializers import UserSerializer, PlaceSerializer, VisitPlaceSerializer, VisitSerializer, CoordinateSerializer
+from .models import User, Place, Visit, Coordinate
 
 class PlaceListView(ListAPIView):
     serializer_class = PlaceSerializer
@@ -54,3 +54,12 @@ class VisitListView(ListCreateAPIView, UpdateModelMixin):
             return Response("An error occurred", status=status.HTTP_400_BAD_REQUEST)
         return Response("Updated successfully", status=status.HTTP_200_OK)
 
+class CoordinateView(RetrieveAPIView):
+    serializer_class = CoordinateSerializer
+
+    def get(self, request, tagID):
+        try:
+            coordinate = Coordinate.objects.filter(tagID=tagID).order_by('datetime').last()
+            return Response(CoordinateSerializer(coordinate).data)
+        except Coordinate.DoesNotExist:
+            return Response(None)

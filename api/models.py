@@ -33,3 +33,14 @@ class Visit(models.Model):
 
     def __str__(self):
         return '{} {} > {}'.format(self.datetime, self.user, self.place)
+
+class Coordinate(models.Model):
+    coordinateID = models.AutoField(primary_key=True)
+    tagID = models.CharField(max_length=10)
+    datetime = models.DateTimeField(auto_now_add=True)
+    place = models.ForeignKey(Place, on_delete=models.CASCADE)
+    x = models.FloatField()
+    y = models.FloatField()
+
+    def __str__(self):
+        return '{} ({:.3f}, {:.3f}) {} {}'.format(self.tagID, self.x, self.y, self.place, self.datetime)

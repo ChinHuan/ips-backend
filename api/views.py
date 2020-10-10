@@ -63,3 +63,15 @@ class CoordinateView(RetrieveAPIView):
             return Response(CoordinateSerializer(coordinate).data)
         except Coordinate.DoesNotExist:
             return Response(None)
+
+    def post(self, request):
+        try:
+            Coordinate.objects.bulk_create([Coordinate(
+                tagID = c['tagID'],
+                place = Place.objects.get(placeID = c['place']),
+                x = c['x'],
+                y = c['y']
+            ) for c in request.data])
+            return Response("Added successfully", status=status.HTTP_201_CREATED)
+        except:
+            return Response("An error occurred", status=status.HTTP_400_BAD_REQUEST)

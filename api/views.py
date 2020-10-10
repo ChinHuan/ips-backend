@@ -73,5 +73,5 @@ class CoordinateView(RetrieveAPIView):
                 y = c['y']
             ) for c in request.data])
             return Response("Added successfully", status=status.HTTP_201_CREATED)
-        except:
-            return Response("An error occurred", status=status.HTTP_400_BAD_REQUEST)
+        except e:
+            return Response(e, status=status.HTTP_400_BAD_REQUEST)

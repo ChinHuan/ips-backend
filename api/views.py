@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIView
 from rest_framework.response import Response
@@ -75,3 +76,15 @@ class CoordinateView(RetrieveAPIView):
             return Response("Added successfully", status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
+
+class CoordinatesView(ListAPIView):
+    serializer_class = CoordinateSerializer
+
+    def filter_queryset(self, queryset):
+        coordinates = queryset.filter(place=self.kwargs['placeID'])
+        coordinates = coordinates.filter(datetime__gt=datetime.utcnow() - timedelta(seconds=30))
+        return coordinates
+
+    def get_queryset(self):
+        queryset = self.filter_queryset(Coordinate.objects.all())
+        return queryset

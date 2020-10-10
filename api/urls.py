@@ -8,5 +8,6 @@ urlpatterns = [
     url('^visits/$', views.VisitListView.as_view()),
     url('^visits/(?P<userID>.+)/$', views.VisitListView.as_view()),
     url('^coordinates/$', views.CoordinateView.as_view()),
-    url('^coordinates/(?P<tagID>.+)/$', views.CoordinateView.as_view()),
+    url('^coordinates/tags/(?P<tagID>.+)/$', views.CoordinateView.as_view()),
+    url('^coordinates/places/(?P<placeID>.+)/$', views.CoordinatesView.as_view()),
 ]

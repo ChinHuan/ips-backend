@@ -76,7 +76,8 @@ class CoordinateView(RetrieveAPIView):
                 tag = Tag.objects.get(tagID = c['tag']),
                 place = Place.objects.get(placeID = c['place']),
                 x = c['x'],
-                y = c['y']
+                y = c['y'],
+                inCloseContact = c['inCloseContact']
             ) for c in request.data])
             return Response("Added successfully", status=status.HTTP_201_CREATED)
         except Exception as e:

@@ -37,4 +37,4 @@ class CoordinateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Coordinate
-        fields = ('coordinateID', 'tag', 'datetime', 'place', 'x', 'y')
+        fields = ('coordinateID', 'tag', 'datetime', 'place', 'x', 'y', 'inCloseContact')

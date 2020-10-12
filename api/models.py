@@ -47,6 +47,7 @@ class Coordinate(models.Model):
     place = models.ForeignKey(Place, on_delete=models.CASCADE)
     x = models.FloatField()
     y = models.FloatField()
+    inCloseContact = models.BooleanField()
 
     def __str__(self):
         return '{} ({:.3f}, {:.3f}) {} {}'.format(self.tag, self.x, self.y, self.place, self.datetime)

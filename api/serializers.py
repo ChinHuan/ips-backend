@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Place, Visit, Coordinate, Tag
+from .models import User, Place, Visit, Coordinate, Tag, Contact
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -38,3 +38,10 @@ class CoordinateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Coordinate
         fields = ('coordinateID', 'tag', 'datetime', 'place', 'x', 'y', 'inCloseContact')
+
+class ContactSerializer(serializers.ModelSerializer):
+    place = PlaceSerializer()
+
+    class Meta:
+        model = Coordinate
+        fields = ('contactID', 'place', 'datetime', 'tag')

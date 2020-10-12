@@ -7,8 +7,8 @@ from rest_framework.mixins import UpdateModelMixin
 from rest_framework import status
 from django.utils.dateparse import parse_duration
 
-from .serializers import UserSerializer, PlaceSerializer, VisitPlaceSerializer, VisitSerializer, CoordinateSerializer, TagSerializer
-from .models import User, Place, Visit, Coordinate, Tag
+from .serializers import UserSerializer, PlaceSerializer, VisitPlaceSerializer, VisitSerializer, CoordinateSerializer, TagSerializer, ContactSerializer
+from .models import User, Place, Visit, Coordinate, Tag, Contact
 
 class PlaceListView(ListAPIView):
     serializer_class = PlaceSerializer
@@ -94,3 +94,17 @@ class CoordinatesView(ListAPIView):
     def get_queryset(self):
         queryset = self.filter_queryset(Coordinate.objects.all())
         return queryset
+
+class ContactView(RetrieveAPIView):
+    serializer_class = ContactSerializer
+
+    def post(self, request):
+        try:
+            Contact.objects.bulk_create([Contact(
+                datetime = c['datetime'],
+                tag = Tag.objects.get(tagID = c['tag']),
+                place = Place.objects.get(placeID = c['place'])
+            ) for c in request.data])
+            return Response("Added successfully", status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)

@@ -51,3 +51,12 @@ class Coordinate(models.Model):
 
     def __str__(self):
         return '{} ({:.3f}, {:.3f}) {} {}'.format(self.tag, self.x, self.y, self.place, self.datetime)
+
+class Contact(models.Model):
+    contactID = models.AutoField(primary_key=True)
+    place = models.ForeignKey(Place, on_delete=models.CASCADE)
+    datetime = models.DateTimeField()
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return '{} {} {}'.format(self.tag, self.place, self.datetime)

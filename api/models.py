@@ -23,11 +23,17 @@ class Place(models.Model):
     def __str__(self):
         return '{}: {}'.format(self.placeID, self.placeName)
 
+class Tag(models.Model):
+    tagID = models.CharField(primary_key=True, max_length=20)
+
+    def __str__(self):
+        return '{}'.format(self.tagID)
+
 class Visit(models.Model):
     visitID = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     place = models.ForeignKey(Place, on_delete=models.CASCADE)
-    tagID = models.CharField(max_length=20)
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
     datetime = models.DateTimeField(auto_now_add=True)
     duration = models.DurationField(null=True, blank=True)
 
@@ -36,11 +42,11 @@ class Visit(models.Model):
 
 class Coordinate(models.Model):
     coordinateID = models.AutoField(primary_key=True)
-    tagID = models.CharField(max_length=20)
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
     datetime = models.DateTimeField(auto_now_add=True)
     place = models.ForeignKey(Place, on_delete=models.CASCADE)
     x = models.FloatField()
     y = models.FloatField()
 
     def __str__(self):
-        return '{} ({:.3f}, {:.3f}) {} {}'.format(self.tagID, self.x, self.y, self.place, self.datetime)
+        return '{} ({:.3f}, {:.3f}) {} {}'.format(self.tag, self.x, self.y, self.place, self.datetime)

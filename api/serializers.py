@@ -45,3 +45,8 @@ class ContactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Coordinate
         fields = ('contactID', 'place', 'datetime', 'tag')
+
+class NotificationSerializer(serializers.Serializer):
+    accessToken = serializers.CharField(max_length=200)
+    tag = serializers.CharField(max_length=20)
+    mode = serializers.CharField(max_length=20)

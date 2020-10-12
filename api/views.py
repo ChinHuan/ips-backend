@@ -7,8 +7,16 @@ from rest_framework.mixins import UpdateModelMixin
 from rest_framework import status
 from django.utils.dateparse import parse_duration
 
-from .serializers import UserSerializer, PlaceSerializer, VisitPlaceSerializer, VisitSerializer, CoordinateSerializer, TagSerializer, ContactSerializer
+from .serializers import UserSerializer, PlaceSerializer, VisitPlaceSerializer, VisitSerializer, CoordinateSerializer, TagSerializer, ContactSerializer, NotificationSerializer
 from .models import User, Place, Visit, Coordinate, Tag, Contact
+
+import firebase_admin
+from firebase_admin import credentials, messaging
+
+cred = credentials.Certificate("api/static/ips-fcm-firebase-adminsdk.json")
+firebase_admin.initialize_app(cred)
+
+tagToToken = {}
 
 class PlaceListView(ListAPIView):
     serializer_class = PlaceSerializer
@@ -105,6 +113,36 @@ class ContactView(RetrieveAPIView):
                 tag = Tag.objects.get(tagID = c['tag']),
                 place = Place.objects.get(placeID = c['place'])
             ) for c in request.data])
+
+            for c in request.data:
+                if c['tag'] in tagToToken:
+                    token = tagToToken[c['tag']]
+                    print("Token", token)
+                    message = messaging.Message(
+                        notification=messaging.Notification(
+                            title = "Warning!",
+                            body = "You are in close distance with others."
+                        ),
+                        # data={
+                        #     "data": "123"
+                        # },
+                        token=token,
+                    )
+                    response = messaging.send(message)
+                    print("Response", response)
             return Response("Added successfully", status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
+
+class NotificationView(RetrieveAPIView):
+    serializer_class = NotificationSerializer
+
+    def post(self, request):
+        tag = request.data['tag']
+        token = request.data['accessToken']
+        mode = request.data['mode']
+        if mode == 'subscribe':
+            tagToToken[tag] = token
+        elif mode == 'unsubscribe':
+            del tagToToken[tag]
+        return Response("Received successfully", status=status.HTTP_201_CREATED)

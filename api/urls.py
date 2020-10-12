@@ -12,4 +12,5 @@ urlpatterns = [
     url('^coordinates/tags/(?P<tagID>.+)/$', views.CoordinateView.as_view()),
     url('^coordinates/places/(?P<placeID>.+)/$', views.CoordinatesView.as_view()),
     url('^contacts/$', views.ContactView.as_view()),
+    url('^notifications/$', views.NotificationView.as_view()),
 ]

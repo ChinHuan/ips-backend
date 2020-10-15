@@ -8,7 +8,7 @@ from rest_framework import status
 from django.utils.dateparse import parse_duration
 
 from .serializers import UserSerializer, PlaceSerializer, VisitPlaceSerializer, VisitSerializer, CoordinateSerializer, TagSerializer, ContactSerializer, NotificationSerializer
-from .models import User, Place, Visit, Coordinate, Tag, Contact
+from .models import User, Place, Visit, Coordinate, Tag, Contact, TagToToken
 
 import firebase_admin
 from firebase_admin import credentials, messaging
@@ -16,7 +16,6 @@ from firebase_admin import credentials, messaging
 cred = credentials.Certificate("api/static/ips-fcm-firebase-adminsdk.json")
 firebase_admin.initialize_app(cred)
 
-tagToToken = {}
 
 class PlaceListView(ListAPIView):
     serializer_class = PlaceSerializer
@@ -115,23 +114,21 @@ class ContactView(RetrieveAPIView):
             ) for c in request.data])
 
             for c in request.data:
-                print("tagToToken", tagToToken)
-                if c['tag'] in tagToToken:
-                    token = tagToToken[c['tag']]
-                    print("Tag", c['tag'])
-                    print("Token", token)
+                try:
+                    tagToToken = TagToToken.objects.get(tag=c['tag'])
+                    token = tagToToken.token
                     message = messaging.Message(
                         notification=messaging.Notification(
                             title = "Warning!",
                             body = "You are in close distance with others."
                         ),
-                        # data={
-                        #     "data": "123"
-                        # },
                         token=token,
                     )
                     response = messaging.send(message)
-                    print("Response", response)
+                    print(response)
+                except TagToToken.DoesNotExist:
+                    print("Token does not exist")
+                    pass
             return Response("Added successfully", status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
@@ -140,12 +137,20 @@ class NotificationView(RetrieveAPIView):
     serializer_class = NotificationSerializer
 
     def post(self, request):
-        tag = request.data['tag']
         token = request.data['accessToken']
+        tag = request.data['tag']
         mode = request.data['mode']
         if mode == 'subscribe':
-            tagToToken[tag] = token
+            try:
+                TagToToken.objects.get(tag=tag)
+                TagToToken.objects.filter(tag=tag).update(token=token)
+            except TagToToken.DoesNotExist:
+                tagToToken = TagToToken(
+                    tag=Tag.objects.get(tagID=tag),
+                    token=token
+                )
+                tagToToken.save()
+            return Response("Subscribed successfully", status=status.HTTP_201_CREATED)
         elif mode == 'unsubscribe':
-            del tagToToken[tag]
-        print("tagToToken", tagToToken)
-        return Response("Received successfully", status=status.HTTP_201_CREATED)
+            TagToToken.objects.filter(tag=tag).delete()
+            return Response("Unsubscribed successfully", status=status.HTTP_201_CREATED)

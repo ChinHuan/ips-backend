@@ -60,3 +60,10 @@ class Contact(models.Model):
 
     def __str__(self):
         return '{} {} {}'.format(self.tag, self.place, self.datetime)
+
+class TagToToken(models.Model):
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE, primary_key=True)
+    token = models.CharField(max_length=200)
+
+    def __str__(self):
+        return str(self.tag)

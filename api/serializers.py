@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Place, Visit, Coordinate, Tag, Contact
+from .models import User, Place, Visit, Coordinate, Tag, Contact, TagToToken
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

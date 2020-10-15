@@ -117,6 +117,7 @@ class ContactView(RetrieveAPIView):
             for c in request.data:
                 if c['tag'] in tagToToken:
                     token = tagToToken[c['tag']]
+                    print("Tag", c['tag'])
                     print("Token", token)
                     message = messaging.Message(
                         notification=messaging.Notification(
@@ -145,4 +146,5 @@ class NotificationView(RetrieveAPIView):
             tagToToken[tag] = token
         elif mode == 'unsubscribe':
             del tagToToken[tag]
+        print("tagToToken", tagToToken)
         return Response("Received successfully", status=status.HTTP_201_CREATED)

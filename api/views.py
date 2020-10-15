@@ -115,6 +115,7 @@ class ContactView(RetrieveAPIView):
             ) for c in request.data])
 
             for c in request.data:
+                print("tagToToken", tagToToken)
                 if c['tag'] in tagToToken:
                     token = tagToToken[c['tag']]
                     print("Tag", c['tag'])

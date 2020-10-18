@@ -29,6 +29,12 @@ class UserView(RetrieveAPIView):
     serializer_class = UserSerializer
 
     def get(self, request, userEmail):
+        """
+        Get a user given a user email.
+        :param request: The request object posted by the caller
+        :param userEmail: The parameter given by the caller
+        :return: User object if it exists else None
+        """
         try:
             user = User.objects.get(userEmail=userEmail)
             return Response(UserSerializer(user).data)
@@ -36,6 +42,11 @@ class UserView(RetrieveAPIView):
             return Response(None)
 
     def post(self, request):
+        """
+        Post a user.
+        :param request: The request object posted by the caller
+        :return: User object with the appropriate status code
+        """
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -46,14 +57,28 @@ class VisitListView(ListCreateAPIView, UpdateModelMixin):
     serializer_class = VisitPlaceSerializer
 
     def filter_queryset(self, queryset):
+        """
+        Filter a queryset based on user ID.
+        :param queryset: The queryset to be filtered
+        :return: The filtered queryset
+        """
         visits = queryset.filter(user=self.kwargs['userID'])
         return visits
 
     def get_queryset(self):
+        """
+        Get a list of visits of a user.
+        :return: A list of visists of a user
+        """
         queryset = self.filter_queryset(Visit.objects.all())
         return queryset
 
     def post(self, request):
+        """
+        Post a visit record.
+        :param request: The request object posted by the caller
+        :return: Visit object with the appropriate status code
+        """
         serializer = VisitSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -61,6 +86,12 @@ class VisitListView(ListCreateAPIView, UpdateModelMixin):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, userID):
+        """
+        Update the visit duration.
+        :param request: The request object posted by the caller
+        :param userID: The visit of the user to be updated
+        :return: The appropriate status code
+        """
         try:
             Visit.objects.filter(user=userID).update(duration=parse_duration(request.data['duration']))
         except:
@@ -71,6 +102,12 @@ class CoordinateView(RetrieveAPIView):
     serializer_class = CoordinateSerializer
 
     def get(self, request, tagID):
+        """
+        Get the coordinate of a tag.
+        :param request: The request object posted by the caller
+        :param tagID: The parameter given by the caller
+        :return: Coordinate object if it exists else None
+        """
         try:
             coordinate = Coordinate.objects.filter(tag=tagID).order_by('datetime').last()
             return Response(CoordinateSerializer(coordinate).data)
@@ -78,6 +115,11 @@ class CoordinateView(RetrieveAPIView):
             return Response(None)
 
     def post(self, request):
+        """
+        Post multiple coordinate records.
+        :param request: The request object posted by the caller
+        :return: The appropriate status code
+        """
         try:
             Coordinate.objects.bulk_create([Coordinate(
                 tag = Tag.objects.get(tagID = c['tag']),
@@ -94,11 +136,20 @@ class CoordinatesView(ListAPIView):
     serializer_class = CoordinateSerializer
 
     def filter_queryset(self, queryset):
+        """
+        Filter a queryset based on place ID.
+        :param queryset: The queryset to be filtered
+        :return: The filtered queryset
+        """
         coordinates = queryset.filter(place=self.kwargs['placeID'])
         coordinates = coordinates.filter(datetime__gt=datetime.utcnow() - timedelta(seconds=30))
         return coordinates
 
     def get_queryset(self):
+        """
+        Get a list of coordinates in a place.
+        :return: A list of coordinates in a place
+        """
         queryset = self.filter_queryset(Coordinate.objects.all())
         return queryset
 
@@ -106,6 +157,12 @@ class ContactView(RetrieveAPIView):
     serializer_class = ContactSerializer
 
     def post(self, request):
+        """
+        Post multiple contact records.
+        Push notifications if required.
+        :param request: The request object posted by the caller
+        :return: The appropriate status code
+        """
         try:
             Contact.objects.bulk_create([Contact(
                 datetime = c['datetime'],
@@ -137,6 +194,11 @@ class NotificationView(RetrieveAPIView):
     serializer_class = NotificationSerializer
 
     def post(self, request):
+        """
+        Either subscribe or unsubscribe for a notification
+        :param request: The request object posted by the caller
+        :return: The appropriate status code
+        """
         token = request.data['accessToken']
         tag = request.data['tag']
         mode = request.data['mode']
